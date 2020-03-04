@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import { LoadData } from "../redux/actions";
+import { loadData, toggleRent } from "../redux/actions";
 import {
   Table,
   TableContainer,
   TableBody,
   TableHead,
   TableCell,
-  TableRow
+  TableRow,
+  Checkbox
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -21,7 +22,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Browser = props => {
+const Browser = ({ loadData, shows, toggleRent }) => {
   useEffect(() => {
     axios
       .get("http://api.tvmaze.com/search/shows?q=the-witcher")
@@ -30,12 +31,19 @@ const Browser = props => {
           id: show.id,
           title: show.name,
           description: show.summary,
-          image: show.image.medium
+          image: show.image.medium,
+          rented: false
         }));
-        props.LoadData(shows);
+        loadData(shows);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [loadData]);
+
+  const changeHandle = (show) => {
+    toggleRent(show.id)
+  }
+
+  console.log(shows);
 
   const classes = useStyles();
   return (
@@ -61,7 +69,7 @@ const Browser = props => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.shows.map(show => (
+          {shows.map(show => (
             <TableRow key={show.id}>
               <TableCell className={classes.cell} align="center">
                 <img src={show.image} alt="" />
@@ -73,7 +81,12 @@ const Browser = props => {
                 {show.description}
               </TableCell>
               <TableCell className={classes.cell} align="center">
-                Rented
+                <Checkbox
+                  checked={show.rented}
+                  onChange={() => changeHandle(show)}
+                  value={show.rented}
+                  color="primary"
+                />
               </TableCell>
               <TableCell className={classes.cell} align="center">
                 Action
@@ -87,11 +100,12 @@ const Browser = props => {
 };
 
 const mapStateToProps = state => ({
-  shows: state.rent.data
+  shows: state.rent.data,
 });
 
 const mapDispatchToProps = dispatch => ({
-  LoadData: data => dispatch(LoadData(data))
+  loadData: data => dispatch(loadData(data)),
+  toggleRent: id => dispatch(toggleRent(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Browser);
