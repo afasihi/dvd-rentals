@@ -19,7 +19,7 @@ const AppRouter = ({ loadData }) => {
           description: show.summary,
           image: show.image.medium,
           rented: false,
-          price: `${(Math.random() * 100).toFixed(2)}$`
+          price: (Math.random() * 100).toFixed(2)
         }));
         loadData(shows);
       })

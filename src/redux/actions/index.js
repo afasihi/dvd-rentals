@@ -20,3 +20,7 @@ export const getRentedShows = (shows) => ({
     shows
   }
 })
+
+export const clearRentedShows = () => ({
+  type: types.CLEAR_RENTED_SHOWS
+})
