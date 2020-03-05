@@ -1,11 +1,22 @@
 import types from "../types";
 
-export const loadData = payload => ({
+export const loadData = data => ({
   type: types.LOAD_DATA,
-  data: payload
+  payload: {
+    data
+  }
 });
 
 export const toggleRent = id => ({
   type: types.TOGGLE_RENT,
-  id
+  payload: {
+    id
+  }
+})
+
+export const getRentedShows = (shows) => ({
+  type:types.RENTED_SHOWS,
+  payload: {
+    shows
+  }
 })

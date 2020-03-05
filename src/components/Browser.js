@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import axios from "axios";
-import { loadData, toggleRent } from "../redux/actions";
+import { toggleRent, getRentedShows } from "../redux/actions";
 import {
   Table,
   TableContainer,
@@ -9,8 +8,10 @@ import {
   TableHead,
   TableCell,
   TableRow,
-  Checkbox
+  Checkbox,
+  Button
 } from "@material-ui/core";
+import { Delete } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
@@ -22,30 +23,32 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Browser = ({ loadData, shows, toggleRent }) => {
-  useEffect(() => {
-    axios
-      .get("http://api.tvmaze.com/search/shows?q=the-witcher")
-      .then(res => {
-        const shows = res.data.map(({ show }) => ({
-          id: show.id,
-          title: show.name,
-          description: show.summary,
-          image: show.image.medium,
-          rented: false
-        }));
-        loadData(shows);
-      })
-      .catch(err => console.log(err));
-  }, [loadData]);
-
-  const changeHandle = (show) => {
-    toggleRent(show.id)
+const useButtonStyle = makeStyles({
+  rent: {
+    background: "#0A79DF",
+    color: "#fff",
+    fontWeight: "600",
+    width: "100px"
+  },
+  cancel: {
+    background: "#E71C23",
+    color: "#fff",
+    fontWeight: "600",
+    width: "100px"
   }
+});
 
-  console.log(shows);
+const Browser = ({ shows, toggleRent, getRentedShows }) => {
+  useEffect(() => {
+    getRentedShows(shows);
+  }, [getRentedShows, shows]);
+
+  const handleClick = show => {
+    toggleRent(show.id);
+  };
 
   const classes = useStyles();
+  const ButtonClasses = useButtonStyle();
   return (
     <TableContainer className={classes.root}>
       <Table>
@@ -72,24 +75,43 @@ const Browser = ({ loadData, shows, toggleRent }) => {
           {shows.map(show => (
             <TableRow key={show.id}>
               <TableCell className={classes.cell} align="center">
-                <img src={show.image} alt="" />
+                <img src={show.image} alt="" width="110px" height="152px" />
               </TableCell>
               <TableCell className={classes.cell} align="center">
                 {show.title}
               </TableCell>
               <TableCell className={classes.cell} align="center">
-                {show.description}
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: show.description
+                  }}
+                />
               </TableCell>
               <TableCell className={classes.cell} align="center">
                 <Checkbox
                   checked={show.rented}
-                  onChange={() => changeHandle(show)}
                   value={show.rented}
                   color="primary"
                 />
               </TableCell>
               <TableCell className={classes.cell} align="center">
-                Action
+                {!show.rented ? (
+                  <Button
+                    onClick={() => handleClick(show)}
+                    variant="contained"
+                    className={ButtonClasses.rent}
+                  >
+                    + Rent
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleClick(show)}
+                    variant="contained"
+                    className={ButtonClasses.cancel}
+                  >
+                    <Delete /> Cancel
+                  </Button>
+                )}
               </TableCell>
             </TableRow>
           ))}
@@ -100,12 +122,12 @@ const Browser = ({ loadData, shows, toggleRent }) => {
 };
 
 const mapStateToProps = state => ({
-  shows: state.rent.data,
+  shows: state.rent.data
 });
 
 const mapDispatchToProps = dispatch => ({
-  loadData: data => dispatch(loadData(data)),
-  toggleRent: id => dispatch(toggleRent(id))
+  toggleRent: id => dispatch(toggleRent(id)),
+  getRentedShows: shows => dispatch(getRentedShows(shows))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Browser);
