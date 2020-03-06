@@ -2,8 +2,7 @@ import { combineReducers } from "redux";
 import types from "../types";
 
 const intialState = {
-  data: [],
-  rentedShows: []
+  shows: []
 };
 
 const rentReducer = (state = intialState, action) => {
@@ -11,36 +10,30 @@ const rentReducer = (state = intialState, action) => {
     case types.LOAD_DATA:
       return {
         ...state,
-        data: action.payload.data
+        shows: action.payload.shows
       };
     case types.TOGGLE_RENT:
       return {
         ...state,
-        data: state.data.map(show => {
+        shows: state.shows.map(show => {
           if (show.id === action.payload.id) {
             return {
               ...show,
               rented: !show.rented
-            }
-          } else 
-            return show
+            };
+          } else return show;
         })
       };
-      case types.RENTED_SHOWS:
-        return {
-          ...state,
-          rentedShows: action.payload.shows.filter(show => show.rented === true)
-        }
-      case types.CLEAR_RENTED_SHOWS: 
+    case types.CLEAR_RENTED_SHOWS:
       return {
         ...state,
-        data: state.data.map(show => {
+        shows: state.shows.map(show => {
           return {
             ...show,
             rented: false
-          }
-        }) 
-      }
+          };
+        })
+      };
     default:
       return state;
   }

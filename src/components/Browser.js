@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
-import { toggleRent, getRentedShows } from "../redux/actions";
+import { toggleRent } from "../redux/actions";
 import {
   Table,
   TableContainer,
@@ -38,11 +38,7 @@ const useButtonStyle = makeStyles({
   }
 });
 
-const Browser = ({ shows, toggleRent, getRentedShows }) => {
-  useEffect(() => {
-    getRentedShows(shows);
-  }, [getRentedShows, shows]);
-
+const Browser = ({ shows, toggleRent }) => {
   const handleClick = show => {
     toggleRent(show.id);
   };
@@ -122,12 +118,11 @@ const Browser = ({ shows, toggleRent, getRentedShows }) => {
 };
 
 const mapStateToProps = state => ({
-  shows: state.rent.data
+  shows: state.rent.shows
 });
 
 const mapDispatchToProps = dispatch => ({
-  toggleRent: id => dispatch(toggleRent(id)),
-  getRentedShows: shows => dispatch(getRentedShows(shows))
+  toggleRent: id => dispatch(toggleRent(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Browser);

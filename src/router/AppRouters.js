@@ -38,7 +38,7 @@ const AppRouter = ({ loadData }) => {
 };
 
 const mapStateToProps = dispatch => ({
-  loadData: data => dispatch(loadData(data))
+  loadData: shows => dispatch(loadData(shows))
 });
 
 export default connect(null, mapStateToProps)(AppRouter);

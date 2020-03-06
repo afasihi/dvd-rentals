@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { clearRentedShows } from "../redux/actions";
+import selectedRentedShows from "../selectors/selected_rentedShows";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,21 +32,20 @@ const useStyles = makeStyles(theme => ({
 
 const getPrice = rented => {
   const price = rented
-    .map(show => show.price * show.nbc)
+    .map(show => show.price * show.nbCopies)
     .reduce((a, b) => a + b, 0);
   return price;
 };
 
 const Cart = ({ rentedShows, clearRentedShows }) => {
   const [rented, setRented] = useState(rentedShows);
-  // const [price, setPrice] = useState(0)
 
   const handleNumberCopies = (e, show) => {
     const rentedNumber = rented.map(rent => {
       if (rent.id === show.id) {
         return {
           ...rent,
-          nbc: e.target.value
+          nbCopies: e.target.value
         };
       } else {
         return rent;
@@ -95,7 +95,7 @@ const Cart = ({ rentedShows, clearRentedShows }) => {
                 <TableCell className={classes.cell} align="center">
                   <input
                     type="number"
-                    value={show.nbc}
+                    value={show.nbCopies}
                     onChange={e => handleNumberCopies(e, show)}
                     min={1}
                     max={30}
@@ -109,7 +109,7 @@ const Cart = ({ rentedShows, clearRentedShows }) => {
       </TableContainer>
       <div className={classes.container}>
         <p>
-          Total Price: <strong>{getPrice(rented)}$</strong>
+          Total Price: <strong>{getPrice(rented).toFixed(2)}$</strong>
         </p>
         <Button
           variant="contained"
@@ -126,10 +126,7 @@ const Cart = ({ rentedShows, clearRentedShows }) => {
 };
 
 const mapStateToProps = state => ({
-  rentedShows: state.rent.rentedShows.map(show => ({
-    ...show,
-    nbc: 1
-  }))
+  rentedShows: selectedRentedShows(state)
 });
 
 const mapDispatchToState = dispatch => ({
